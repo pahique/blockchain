@@ -126,7 +126,9 @@ class Blockchain {
   replaceBlock(blockNumber, block) {
     return db.getCount().then(function(count) {
       if (blockNumber < count) {
-        block.height = blockNumber;
+        if (block instanceof Block) {
+          block.height = blockNumber;
+        }
         let stringifiedBlock = JSON.stringify(block);
         return db.addLevelDBData(blockNumber, stringifiedBlock).then(function() {
           return stringifiedBlock;
