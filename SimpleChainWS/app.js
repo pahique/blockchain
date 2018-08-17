@@ -11,20 +11,6 @@ const server = Hapi.server({
 
 server.route({
     method: 'GET',
-    path: '/blockchain',
-    handler: (request, h) => {
-        return blockchain.printBlockchain().then((blockResults) => {
-            return h.response(blockResults).code(200)
-                  .header('content-type', 'application/json; charset=utf-8')
-                  .header('cache-control', 'no-cache');
-        });
-
-    }
-});
-
-
-server.route({
-    method: 'GET',
     path: '/block/{blockHeight}',
     handler: (request, h) => {
         let blockHeight = encodeURIComponent(request.params.blockHeight);
@@ -43,6 +29,7 @@ server.route({
     }
 });
 
+// Route for posting a new block
 server.route({
     method: 'POST',
     path: '/block',
@@ -56,6 +43,20 @@ server.route({
                   .header('cache-control', 'no-cache')
                   .header('statusCode', 200);
         });
+    }
+});
+
+// Route for getting all the blocks from the chain
+server.route({
+    method: 'GET',
+    path: '/blockchain',
+    handler: (request, h) => {
+        return blockchain.printBlockchain().then((blockResults) => {
+            return h.response(blockResults).code(200)
+                  .header('content-type', 'application/json; charset=utf-8')
+                  .header('cache-control', 'no-cache');
+        });
+
     }
 });
 
