@@ -1,4 +1,4 @@
-// Udacity Blockchain Nanodegree - Project 2
+// Blockchain Data Project
 var SHA256 = require('crypto-js/sha256');
 const level = require('level');
 
