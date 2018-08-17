@@ -9,6 +9,7 @@ const server = Hapi.server({
     host: 'localhost'
 });
 
+// Route for getting a block by height
 server.route({
     method: 'GET',
     path: '/block/{blockHeight}',
