@@ -36,7 +36,12 @@ To test code:
 ```
 node app.js
 ```
-2: The server will be listening at localhost, port 8000
+2: The server will be listening at localhost, port 8000.
+   Endpoints:
+      "http://localhost:8000/block/{BLOCK_HEIGHT}" in order to get a block by its height.
+      "http://localhost:8000/block" in order to POST a new block.
+      "http://localhost:8000/blockchain" in order to view all the blocks in the chain.
+
 3: Access "http://localhost:8000/block/0" to view the Genesis block.
 4: Add a new block by sending a POST request
 ```
