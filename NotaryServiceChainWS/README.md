@@ -61,7 +61,10 @@ curl -X "POST" "http://localhost:8000/requestValidation" -H 'Content-Type: appli
 ```
 Example of returned JSON object:
 ```
-{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW","requestTimestamp":"1536716808","message":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW:1536716808:starRegistry","validationWindow":300}
+{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW",
+ "requestTimestamp":"1536716808",
+ "message":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW:1536716808:starRegistry",
+ "validationWindow":300}
 ```
 
 5: The previous POST will return a JSON object containing a message field, like: "message":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW:1536700880:starRegistry". Sign that message using your wallet/address.
@@ -75,7 +78,13 @@ curl -X "POST" "http://localhost:8000/message-signature/validate" -H 'Content-Ty
 ```
 Result:
 ```
-{"registerStar":true,"status":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW","requestTimestamp":"1536716808","message":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW:1536716808:starRegistry","validationWindow":260,"messageSignature":"valid"}}
+{"registerStar":true,
+ "status":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW",
+           "requestTimestamp":"1536716808",
+           "message":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW:1536716808:starRegistry",
+           "validationWindow":260,
+           "messageSignature":"valid"}
+}
 ```
 
 7: Once the validation is confirmed by the fields "registerStar":true and "messageSignature":"valid", register the star by sending a POST request like the one below:
@@ -91,14 +100,31 @@ curl -X "POST" "http://localhost:8000/block" -H 'Content-Type: application/json;
 ```
 Resulting block (note that the field story gets encoded in hexadecimals):
 ```
-{"hash":"a9b6f106843b504e22ad76c6c3c25f204ba7d85d138b5a9105320aa491319a2a","height":3,"body":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW","star":{"dec":"-26° 29' 24.9","ra":"16h 29m 1.0s","story":"5061756c6f2068617320666f756e6420612073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"}},"time":"1536716856","previousBlockHash":"3288a93ab1cc9fa5144a9c0ed43e9196975af26a6f2cbc6b352a2174cf334976"}
+{"hash":"a9b6f106843b504e22ad76c6c3c25f204ba7d85d138b5a9105320aa491319a2a",
+ "height":3,
+ "body":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW",
+         "star":{"dec":"-26° 29' 24.9",
+         "ra":"16h 29m 1.0s",
+         "story":"5061756c6f2068617320666f756e6420612073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"}
+ },
+ "time":"1536716856",
+ "previousBlockHash":"3288a93ab1cc9fa5144a9c0ed43e9196975af26a6f2cbc6b352a2174cf334976"}
 ```
 
 8: Access "http://localhost:8000/block/1" to view the block/star that has just been created.
 
 9: Access "http://localhost:8000/stars/hash:a9b6f106843b504e22ad76c6c3c25f204ba7d85d138b5a9105320aa491319a2a" to view the same block/star by hash. Note that the field "storyDecoded" shows the original story, decoded from the hexadecimals.
 ```
-{"hash":"a9b6f106843b504e22ad76c6c3c25f204ba7d85d138b5a9105320aa491319a2a","height":3,"body":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW","star":{"dec":"-26° 29' 24.9","ra":"16h 29m 1.0s","story":"5061756c6f2068617320666f756e6420612073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f","storyDecoded":"Paulo has found a star using https://www.google.com/sky/"}},"time":"1536716856","previousBlockHash":"3288a93ab1cc9fa5144a9c0ed43e9196975af26a6f2cbc6b352a2174cf334976"}
+{"hash":"a9b6f106843b504e22ad76c6c3c25f204ba7d85d138b5a9105320aa491319a2a",
+ "height":3,
+ "body":{"address":"mwhDF34CCjWdCEqP5hrfRE2ukyPXS6ZYeW",
+ "star":{"dec":"-26° 29' 24.9",
+         "ra":"16h 29m 1.0s",
+         "story":"5061756c6f2068617320666f756e6420612073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+         "storyDecoded":"Paulo has found a star using https://www.google.com/sky/"}
+ },
+ "time":"1536716856",
+ "previousBlockHash":"3288a93ab1cc9fa5144a9c0ed43e9196975af26a6f2cbc6b352a2174cf334976"}
 ```
 
 10: Repeat the whole process again and register a different star for the same address.

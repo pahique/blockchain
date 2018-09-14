@@ -188,7 +188,7 @@ function validateStarRegistryRequest(payload) {
   else if (!payload.star.ra) throw new Error('star.ra (right ascension) field missing');
   else if (!payload.star.dec) throw new Error('star.dec (declination) field missing');
   else if (!payload.star.story) throw new Error('star.story (star story) field missing');
-  else if (payload.star.story.length > 250) throw new Error('star.story must have no more than 250 characters');
+  else if (payload.star.story.length > 500) throw new Error('star.story must have no more than 500 characters');
   return true;
 }
 
