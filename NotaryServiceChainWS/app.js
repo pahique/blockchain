@@ -8,7 +8,7 @@ const SimpleChain = require('./simpleChain.js');
 const RequestValidation = require('./requestValidation.js');
 
 const blockchain = new SimpleChain.Blockchain();
-const validationWindowInMinutes = 300;
+const maxValidationWindowInSeconds = 300;
 
 const server = hapi.server({
     port: 8000,
@@ -24,14 +24,31 @@ server.route({
         if (input.address) {
           const address = input.address;
           console.log(`Request validation, address ${address} ...`);
-          const requestTimestamp = new Date().getTime().toString().slice(0,-3);
-          const message = `${address}:${requestTimestamp}:starRegistry`;
-          // creates a new request for that address
-          RequestValidation.putRequest(address, message);
+          const now = new Date().getTime().toString().slice(0,-3);
+          let validationWindow = maxValidationWindowInSeconds;
+          let requestTimestamp = now;
+          let message = RequestValidation.getRequestMessage(address);
+          if (message) {
+            // request already made, getting data from it
+            requestTimestamp = message.split(":")[1];
+            const timeElapsed = now - requestTimestamp;
+            if (timeElapsed < maxValidationWindowInSeconds) {
+              validationWindow = maxValidationWindowInSeconds - timeElapsed;
+            } else {
+              // request has expired, creating a new request for that address
+              requestTimestamp = now;
+              message = `${address}:${requestTimestamp}:starRegistry`;
+              RequestValidation.putRequest(address, message);
+            }
+          } else {
+            // request not found, creating a new request for that address
+            message = `${address}:${requestTimestamp}:starRegistry`;
+            RequestValidation.putRequest(address, message);
+          }
           return h.response({address: address,
                           requestTimestamp: requestTimestamp,
                           message: message,
-                          validationWindow: validationWindowInMinutes}).code(200)
+                          validationWindow: validationWindow}).code(200)
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache')
         } else {
@@ -75,7 +92,7 @@ server.route({
         const requestTimestamp = message.split(":")[1];
         const now = new Date().getTime().toString().slice(0,-3);
         const timeElapsed = now - requestTimestamp;
-        if (timeElapsed < validationWindowInMinutes) {
+        if (timeElapsed < maxValidationWindowInSeconds) {
           const result = bitcoinMessage.verify(message, address, signature);
           // updates the verification result for that address
           RequestValidation.validateRequest(address, result);
@@ -84,7 +101,7 @@ server.route({
                                 address: address,
                                 requestTimestamp: requestTimestamp,
                                 message: message,
-                                validationWindow: (validationWindowInMinutes - timeElapsed),
+                                validationWindow: (maxValidationWindowInSeconds - timeElapsed),
                                 messageSignature: (result ? "valid" : "invalid")
                              }}).code(200)
                 .header('content-type', 'application/json; charset=utf-8')
