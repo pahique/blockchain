@@ -1,15 +1,16 @@
 'use strict';
 
-const SimpleChain = require('./simpleChain.js');
-const requestValidation = require('./requestValidation.js');
-const Hapi = require('hapi');
+const hapi = require('hapi');
 const bitcoin = require('bitcoinjs-lib');
 const bitcoinMessage = require('bitcoinjs-message');
+
+const SimpleChain = require('./simpleChain.js');
+const RequestValidation = require('./requestValidation.js');
 
 const blockchain = new SimpleChain.Blockchain();
 const validationWindowInMinutes = 300;
 
-const server = Hapi.server({
+const server = hapi.server({
     port: 8000,
     host: 'localhost'
 });
@@ -25,8 +26,8 @@ server.route({
           console.log(`Request validation, address ${address} ...`);
           const requestTimestamp = new Date().getTime().toString().slice(0,-3);
           const message = `${address}:${requestTimestamp}:starRegistry`;
-          // creates a new request
-          requestValidation.putRequest(address, message);
+          // creates a new request for that address
+          RequestValidation.putRequest(address, message);
           return h.response({address: address,
                           requestTimestamp: requestTimestamp,
                           message: message,
@@ -34,7 +35,7 @@ server.route({
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache')
         } else {
-            return h.response({statusCode: 400, error: "Address missing"}).code(400)
+            return h.response({statusCode: 400, error: `address field missing`}).code(400)
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache');
         }
@@ -54,6 +55,7 @@ server.route({
    handler: (request, h) => {
         const input = request.payload;
         try {
+          // checks required fields
           validateMessageSignatureRequest(input);
         } catch(error) {
             return h.response({statusCode: 400, error: error.message}).code(400)
@@ -63,10 +65,10 @@ server.route({
         const address = input.address;
         const signature = input.signature;
         console.log(`Message signature validation, address ${address} ... `);
-        // checks if a request has been made previously
-        const message = requestValidation.getRequestMessage(address);
+        // checks if the user has submitted a request as prerequisite
+        const message = RequestValidation.getRequestMessage(address);
         if (!message) {
-            return h.response({statusCode: 412, error: `Validation request not found`}).code(412)
+            return h.response({statusCode: 412, error: `Validation request not found for address ${address}`}).code(412)
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache');
         }
@@ -75,8 +77,8 @@ server.route({
         const timeElapsed = now - requestTimestamp;
         if (timeElapsed < validationWindowInMinutes) {
           const result = bitcoinMessage.verify(message, address, signature);
-          // updates the verification result in the map
-          requestValidation.validateRequest(address, result);
+          // updates the verification result for that address
+          RequestValidation.validateRequest(address, result);
           return h.response({registerStar: result,
                              status: {
                                 address: address,
@@ -88,8 +90,8 @@ server.route({
                 .header('content-type', 'application/json; charset=utf-8')
                 .header('cache-control', 'no-cache');
         } else {
-          // validation window has expired, removes entry from the map
-          requestValidation.deleteRequest(address);
+          // validation window has expired, removes the request validation entry for that address
+          RequestValidation.deleteRequest(address);
           return h.response({statusCode: 412, error: `Validation window expired`}).code(412)
                 .header('content-type', 'application/json; charset=utf-8')
                 .header('cache-control', 'no-cache');
@@ -110,7 +112,7 @@ server.route({
                   .header('cache-control', 'no-cache')
         })
        .catch(error => {
-            return h.response({statusCode: 404, error: `Block not found`}).code(404)
+            return h.response({statusCode: 404, error: `Block #${blockHeight} not found`}).code(404)
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache');
         });
@@ -131,7 +133,7 @@ server.route({
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache')
         }).catch(error => {
-            return h.response({statusCode: 404, error: `Block not found`}).code(404)
+            return h.response({statusCode: 404, error: `Block with hash ${hash} not found`}).code(404)
                   .header('content-type', 'application/json; charset=utf-8')
                   .header('cache-control', 'no-cache');
         });
@@ -147,9 +149,15 @@ server.route({
         let address = encodeURIComponent(request.params.address);
         console.log(`Getting blocks by address ${address} ...`);
         return blockchain.getBlocksByAddress(address).then(blocks => {
-            return h.response(blocks).code(200)
-                  .header('content-type', 'application/json; charset=utf-8')
-                  .header('cache-control', 'no-cache')
+            if (blocks.length > 0) {
+              return h.response(blocks).code(200)
+                    .header('content-type', 'application/json; charset=utf-8')
+                    .header('cache-control', 'no-cache');
+            } else {
+              return h.response({statusCode: 404, error: `No blocks found with the address ${address}`}).code(404)
+                    .header('content-type', 'application/json; charset=utf-8')
+                    .header('cache-control', 'no-cache');
+            }
         });
 
     }
@@ -181,13 +189,13 @@ server.route({
                 .header('cache-control', 'no-cache');
         }
         // Checks if a message signature has already been validated
-        if (requestValidation.isRequestValidated(blockContent.address)) {
+        if (RequestValidation.isRequestValidated(blockContent.address)) {
           console.log(`Registering a new star for address ${blockContent.address}...`);
           blockContent.star.story = Buffer.from(blockContent.star.story).toString('hex');
           let block = new SimpleChain.Block(blockContent);
           return blockchain.addBlock(block).then(resultBlock => {
               // requires a new validation for the next star, by deleting the existing validation
-              requestValidation.deleteRequest(blockContent.address);
+              RequestValidation.deleteRequest(blockContent.address);
               return h.response(resultBlock)
                     .header('content-type', 'application/json; charset=utf-8')
                     .header('cache-control', 'no-cache')
