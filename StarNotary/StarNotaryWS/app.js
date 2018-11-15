@@ -35,6 +35,6 @@ app.listen(3000, function () {
   let StarNotary = web3.eth.contract(contractJson.abi);
 
   // Grab the contract at specified deployed address with the interface defined by the ABI
-  starNotary = StarNotary.at('0x4481bb6cd7903efffca43eb6c604d6f9a3b4471b');
+  starNotary = StarNotary.at('0x963024b157dd5826974b169179fc173a6709da83');
   console.log("Using StarNotary contract at: " + starNotary.address);
 });

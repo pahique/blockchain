@@ -74,8 +74,8 @@
            }
 
             // The address of the smart contract
-            //const contractAddress = '0x946b6ba186e6511a3d80fbe969c3a3493097fac0';  // Ganache
-            const contractAddress = '0x4481bb6cd7903efffca43eb6c604d6f9a3b4471b';  // Rinkeby
+            //const contractAddress = '0xe37178fb2be61a28cf796b569465fd10a90a5236';  // Ganache
+            const contractAddress = '0x963024b157dd5826974b169179fc173a6709da83';  // Rinkeby
             console.log('contract address: ' + contractAddress);
             // The interface definition for your smart contract (the ABI) 
             let StarNotary = web3.eth.contract(
@@ -657,6 +657,7 @@
                                     showErrorMessageOnSearch('star not found');
                                 }
                             } else { 
+                                showErrorMessageOnSearch(extractMessageFromError(error));
                                 console.log(error);
                             }
                         });

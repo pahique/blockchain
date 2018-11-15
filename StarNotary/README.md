@@ -1,8 +1,8 @@
 StarNotary Project (by Paulo Henrique C. Oliveros)
 
 - Network: Rinkeby Test Network
-- Contract address: 0x4481bb6cd7903efffca43eb6c604d6f9a3b4471b
-- TransactionId (contract creation): 0xf546ec19dce1c5aa2cf1f0eed64f087f5da8db092d48ae9bf0f2fcc1aa04242c
+- Contract address: 0x963024b157dd5826974b169179fc173a6709da83
+- TransactionId (contract creation): 0xb03393c33eb8a00562aa732cd21a389e94a531d232ee7d38b8b3ccccdeb7d12f
 
 Project folders:
 

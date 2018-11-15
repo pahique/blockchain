@@ -5,8 +5,8 @@ import 'openzeppelin-solidity/contracts/token/ERC721/ERC721.sol';
 
 contract StarNotary is ERC721 { 
 
-    // Note: I did some research and noticed that actually only RA and DEC identify a star coordinate.
-    // CENT would indicate the constellation Centaurus (which is optional regarding coordinates, so I replaced it by the RA). 
+    // Note: I did some research and noticed that actually RA and DEC identify a star coordinate.
+    // CENT would indicate the constellation Centaurus (which is optional regarding coordinates, so I replaced that attribute by the RA). 
     // The magnitude is not actually a coordinate, it's about the intensity of the star and maybe it could be declared outside this struct.
     // But, for simplicity and since the specification is confusing on this, I'm assuming that RA, DEC and MAG identify uniquely a star coordinate, 
     // and assume that those values are strings, because solidity does not fully support float/decimal types yet.
@@ -24,8 +24,8 @@ contract StarNotary is ERC721 {
 
     mapping(uint256 => Star) public tokenIdToStarInfo; 
     mapping(uint256 => uint256) public starsForSale;
-    mapping(bytes => bool) internal coordinatesAlreadyExist;
-    uint256[] public allStarForSale;
+    mapping(bytes32 => bool) internal coordinatesAlreadyExist;
+    uint256[] public allStarsForSale;
 
     function createStar(string _name, string _story, string _ra, string _dec, string _mag, uint256 _tokenId) public { 
         require(_tokenId > 0, 'id is required');
@@ -40,21 +40,19 @@ contract StarNotary is ERC721 {
         Coordinates memory coord = Coordinates(_ra, _dec, _mag);
         Star memory newStar = Star(_name, _story, coord);
         tokenIdToStarInfo[_tokenId] = newStar;
-        bytes memory coordinateKey = abi.encodePacked(_ra, _dec, _mag);
-        coordinatesAlreadyExist[coordinateKey] = true;
+        coordinatesAlreadyExist[keccak256(abi.encodePacked(_ra, _dec, _mag))] = true;
         _mint(msg.sender, _tokenId);
     }
 
     function checkIfUnique(string _ra, string _dec, string _mag) public view returns(bool) {
-        bytes memory coordinateKey = abi.encodePacked(_ra, _dec, _mag);
-        return (!coordinatesAlreadyExist[coordinateKey]);
+        return (!coordinatesAlreadyExist[keccak256(abi.encodePacked(_ra, _dec, _mag))]);
     }
 
     function putStarUpForSale(uint256 _tokenId, uint256 _price) public { 
-        require(this.ownerOf(_tokenId) == msg.sender, 'only the owner can put a star up for sale');
+        require(ownerOf(_tokenId) == msg.sender, 'only the owner can put a star up for sale');
 
         starsForSale[_tokenId] = _price;
-        allStarForSale.push(_tokenId);
+        allStarsForSale.push(_tokenId);
     }
 
     function buyStar(uint256 _tokenId) public payable { 
@@ -78,10 +76,10 @@ contract StarNotary is ERC721 {
 
     function removeStarForSale(uint256 _tokenId) internal {
         starsForSale[_tokenId] = 0;
-        for (uint i=0; i < allStarForSale.length; i++) {
-            if (allStarForSale[i] == _tokenId) {
-                allStarForSale[i] = allStarForSale[allStarForSale.length-1];
-                allStarForSale.length--;
+        for (uint i=0; i < allStarsForSale.length; i++) {
+            if (allStarsForSale[i] == _tokenId) {
+                allStarsForSale[i] = allStarsForSale[allStarsForSale.length-1];
+                allStarsForSale.length--;
                 break;
             }
         }
@@ -97,6 +95,6 @@ contract StarNotary is ERC721 {
     }
 
     function allStarsForSale() public view returns(uint256[]) {
-        return allStarForSale;
+        return allStarsForSale;
     }
 }
