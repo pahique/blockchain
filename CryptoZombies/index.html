@@ -10,6 +10,8 @@
   <body>
     <h1>Crypto Zombies</h1>
     <div id="txStatus"></div>
+    <input type="text" id="name" value=""/>
+    <input type="button" value="Create Zombie" onclick="createZombie();"/>
     <h2>Zombies</h2>
     <div id="zombies"></div>
 
@@ -18,7 +20,8 @@
       var userAccount;
 
       function startApp() {
-        var cryptoZombiesAddress = "0xec743add1df32d2ce57b290717a5919121ae727b";  // Rinkeby
+        //var cryptoZombiesAddress = "0xdd4ad1b4c61bc5cbf1ca8af42cdd652c69f8c071";  // Rinkeby
+        var cryptoZombiesAddress = "0x9a1aa71d9e0bda8d9747628c91951bd0c02bb085";
         cryptoZombies = new web3js.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
         var accountInterval = setInterval(function() {
@@ -58,6 +61,12 @@
             </div>`);
           });
         }
+      }
+
+      function createZombie() {
+          let name = $("#name").val();
+          console.log('Creating a random zombie called ' + name);
+          createRandomZombie(name);
       }
 
       function createRandomZombie(name) {
