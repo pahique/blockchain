@@ -6,18 +6,18 @@
 
 ## Project folders:
 
-- **smart_contracts:** contains the smart contract code and test cases, as well as truffle configurations for deployment.
+- **./smart_contracts:** contains the smart contract code and test cases, as well as truffle configurations for deployment.
 
-Install all package.json dependencies and run:
+  Install all package.json dependencies and run:
 ```
   truffle compile
   truffle test
   truffle deploy --network rinkeby
 ```
-- **StarNotaryWeb:** contains the HTML client page.
+- **./StarNotaryWeb:** contains the HTML client page.
 
-Run http-server on root folder and access "http://localhost:8080/StarNotaryWeb/" (remember to select "Rinkeby network" on Metamask)
+  Run http-server on root folder and access http://localhost:8080/StarNotaryWeb/ (remember to select "Rinkeby network" on Metamask)
 
-- **StarNotaryWS:** contains the NodeJS client.
+- **./StarNotaryWS:** contains the NodeJS client.
 
-Install all package.json dependencies on this folder and call "node app.js" to enable the URL "http://localhost:3000/star/{id}"
+  Install all package.json dependencies on this folder and call `node app.js` to enable the URL http://localhost:3000/star/{id}
