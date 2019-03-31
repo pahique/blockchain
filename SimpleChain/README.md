@@ -28,18 +28,19 @@ npm install level --save
 
 ## Testing
 
-To test code:
-1: Open a command prompt or shell terminal after installing node.js.
-2: Enter a node session, also known as REPL (Read-Evaluate-Print-Loop).
+In order to test code:
+
+1. Open a command prompt or shell terminal after installing node.js.
+2. Enter a node session, also known as REPL (Read-Evaluate-Print-Loop).
 ```
 node
 ```
-3: Copy and paste the contents of simpleChain.js into the node session
-4: Instantiate blockchain with a variable
+3. Copy and paste the contents of simpleChain.js into the node session
+4. Instantiate blockchain with a variable
 ```
 let b = new Blockchain();
 ```
-5: Generate some blocks
+5. Generate some blocks
 ```
 .editor
 b.addBlock(new Block('test1')).then(function(r) {
@@ -61,7 +62,7 @@ b.addBlock(new Block('test1')).then(function(r) {
 ^D
 
 ```
-6: Test some helper functions
+6. Test some helper functions
 ```
 b.getBlockHeight().then(function(r) { console.log(r); });
 
@@ -71,16 +72,16 @@ b.validateBlock(1).then(function(r) { console.log(r); });
 
 b.printBlockchain();
 ```
-7: Validate blockchain
+7. Validate blockchain
 ```
 b.validateChain().then(function(r) { console.log(r); });
 ```
-8: Induce errors by changing block data
+8. Induce errors by changing block data
 ```
 b.replaceBlock(1, 'invalid block').then(function(r) { console.log(r); });
 b.replaceBlock(3, new Block('replaced')).then(function(r) { console.log(r); });
 ```
-9: Validate blockchain. The chain should now fail with blocks 1, 3 and their connections.
+9. Validate blockchain. The chain should now fail with blocks 1, 3 and their connections.
 ```
 b.validateChain().then(function(r) { console.log(r); });
 ```

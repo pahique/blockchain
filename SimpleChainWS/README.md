@@ -31,21 +31,23 @@ npm install hapi --save
 ```
 ## Testing
 
-To test code:
-1: Start the node app
+In order to test code:
+
+1. Start the node app
 ```
 node app.js
 ```
-2: The server will be listening at localhost, port 8000.
-   Endpoints:
-      "http://localhost:8000/block/{BLOCK_HEIGHT}" in order to get a block by its height.
-      "http://localhost:8000/block" in order to POST a new block.
-      "http://localhost:8000/blockchain" in order to view all the blocks in the chain.
+2. The server will be listening at localhost, port 8000.
 
-3: Access "http://localhost:8000/block/0" to view the Genesis block.
-4: Add a new block by sending a POST request
+   Endpoints:
+      * "http://localhost:8000/block/{BLOCK_HEIGHT}" in order to get a block by its height.
+      * "http://localhost:8000/block" in order to POST a new block.
+      * "http://localhost:8000/blockchain" in order to view all the blocks in the chain.
+
+3. Access "http://localhost:8000/block/0" to view the Genesis block.
+4. Add a new block by sending a POST request
 ```
 curl -X "POST" "http://localhost:8000/block" -H 'Content-Type: application/json' -d $'{"body":"block body contents"}'
 ```
-5: Access "http://localhost:8000/block/1" to view the block just created.
-6: View the contents of the whole blockchain by accessing "http://localhost:8000/blockchain"
+5. Access "http://localhost:8000/block/1" to view the block just created.
+6. View the contents of the whole blockchain by accessing "http://localhost:8000/blockchain"
